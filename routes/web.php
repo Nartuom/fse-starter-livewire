@@ -2,12 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Livewire\Chat;
 
 Route::get('/', fn () => view('welcome'))->name('home');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// new chat route
+Route::get('/chat', Chat::class)
+    ->middleware(['auth', 'verified'])
+    ->name('chat');
 
 Route::middleware(['auth'])->group(function (): void {
     Route::redirect('settings', 'settings/profile');
