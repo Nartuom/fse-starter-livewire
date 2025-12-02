@@ -11,10 +11,10 @@
     <div
     class="h-full flex flex-col gap-4"
     x-data
-    x-init="
-        // Load saved username from localStorage on first load
-        if (localStorage.getItem('chat_user_name')) {
-            $wire.userName = localStorage.getItem('chat_user_name');
+    x-init="(() => {
+        const savedName = localStorage.getItem('chat_user_name');
+        if (savedName) {
+            $wire.userName = savedName;
         }
 
         $wire.on('message-sent', () => {
@@ -23,7 +23,7 @@
                 container.scrollTop = container.scrollHeight;
             }
         });
-    "
+    })()"
 >
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold tracking-tight">Team Chat</h1>
@@ -33,7 +33,7 @@
     </div>
 
     {{-- Username input --}}
-    <div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3">
+    <div class="bg-white rounded-xl border border-slate-200 p-4 inline-flex flex-wrap items-center gap-3">
         <img
             src="{{ $avatar }}"
             alt="{{ $userName }}"
@@ -46,20 +46,19 @@
             type="text"
             wire:model.live="userName"
             x-on:input="localStorage.setItem('chat_user_name', $event.target.value)"
-            class="flex-1 rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2"
+            class="flex rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2"
             placeholder="How should we show your messages?"
         >
         {{-- Upload profile image --}}
-        <form wire:submit.prevent="saveAvatar" class="space-y-2">
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide">
+        <form wire:submit.prevent="saveAvatar" class="">
+            <label class="block text-xs font-semibold text-slate-500 uppercase">
                 Profile picture
             </label>
 
             <input
                 type="file"
                 wire:model="avatarImage"
-            
-                class="block w-full text-sm text-slate-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-slate-900 file:text-white hover:file:bg-slate-800"
+                class="flex w-full text-xs text-slate-700 file:mr-2 file:py-2 file:px-2 file:rounded-lg file:border-1 file:bg-slate-900 file:text-white hover:file:bg-slate-800 mb-2"
             >
 
             @error('avatarImage')
