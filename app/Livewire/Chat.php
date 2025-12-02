@@ -1,14 +1,15 @@
 <?php
-
 namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
-
+use Livewire\WithFileUploads; 
 class Chat extends Component
 {
+    use WithFileUploads;
     public string $userName = '';
+    public $avatarImage = null;
     public string $messageText = '';
     public $chatMessages;
 
@@ -19,7 +20,6 @@ class Chat extends Component
 
     public function mount(): void
     {
-        // Default username from authed user (can be overridden)
         if (Auth::check() && $this->userName === '') {
             $this->userName = Auth::user()->name ?? '';
         }
@@ -50,10 +50,30 @@ class Chat extends Component
         $this->messageText = '';
 
         $this->loadMessages();
-
-        // Optionally scroll on frontend
         $this->dispatch('message-sent');
     }
+
+    public function saveAvatar(): void
+    {
+        
+        $this->validate([
+            'avatarImage' => 'nullable|image|max:10240', 
+        ]);
+
+        if (! $this->avatarImage || ! Auth::check()) {
+            return;
+        }
+        $path = $this->avatarImage->store('avatars', 'public');
+
+        $user = Auth::user();
+        $user->avatar_url = $path;
+        $user->save();
+
+        $this->reset('avatarImage');
+
+        session()->flash('status', 'Avatar updated.');
+    }
+
 
     public function render()
     {
