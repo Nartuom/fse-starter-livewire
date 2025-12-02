@@ -78,7 +78,7 @@
     {{-- Chat panel --}}
     <div class="flex-1 bg-white rounded-xl border border-slate-200 flex flex-col overflow-hidden">
         <div
-            id="chatMessages"
+            id="chat-messages"
             class="flex-1 overflow-y-auto px-4 py-3 space-y-3"
             wire:poll.2s="loadMessages"
         >
