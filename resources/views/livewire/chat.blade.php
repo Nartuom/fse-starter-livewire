@@ -1,3 +1,11 @@
+@php
+    $user = auth()->user();
+
+    $avatar = $user && $user->avatar_url
+        ? asset('storage/'.$user->avatar_url)
+        : 'https://ui-avatars.com/api/?name='.urlencode($user->name ?? 'User');
+@endphp
+
 <div class="space-y-4">
 
     <div
@@ -26,6 +34,11 @@
 
     {{-- Username input --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3">
+        <img
+            src="{{ $avatar }}"
+            alt="{{ $userName }}"
+            class="h-8 w-8 rounded-full object-cover bg-slate-200 mt-1"
+        >
         <label class="text-sm font-medium text-slate-700">
             Display name
         </label>
@@ -33,11 +46,35 @@
             type="text"
             wire:model.live="userName"
             x-on:input="localStorage.setItem('chat_user_name', $event.target.value)"
-            class="flex-1 rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+            class="flex-1 rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2"
             placeholder="How should we show your messages?"
         >
-    </div>
+        {{-- Upload profile image --}}
+        <form wire:submit.prevent="saveAvatar" class="space-y-2">
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Profile picture
+            </label>
 
+            <input
+                type="file"
+                wire:model="avatarImage"
+            
+                class="block w-full text-sm text-slate-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-slate-900 file:text-white hover:file:bg-slate-800"
+            >
+
+            @error('avatarImage')
+                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+            @enderror
+
+            <button
+                type="submit"
+                class="inline-flex items-center rounded-lg bg-indigo-600 px-2 py-2 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+            >
+                Save avatar
+            </button>
+        </form>
+    </div>
+    
     {{-- Chat panel --}}
     <div class="flex-1 bg-white rounded-xl border border-slate-200 flex flex-col overflow-hidden">
         <div
@@ -47,9 +84,14 @@
         >
             @forelse ($chatMessages as $message)
                 <div class="flex flex-col text-sm">
-                    <div class="flex items-baseline gap-2">
+                    <div class="flex items-center gap-2">
+                        <img
+                            src="{{ $avatar }}"
+                            alt="{{ $message->user_name }}"
+                            class="h-8 w-8 rounded-full object-cover bg-slate-200 mt-1"
+                        >
                         <span class="font-semibold text-slate-800">
-                            {{ $message->user_name }}
+                            {{ $message->user_name }}  
                         </span>
                         <span class="text-[11px] uppercase tracking-wide text-slate-400">
                             {{ $message->created_at->format('H:i') }}
