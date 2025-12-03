@@ -9,7 +9,7 @@ class Chat extends Component
 {
     use WithFileUploads;
     public string $userName = '';
-    public $avatarImage = null;
+    public $avatarImage;
     public string $messageText = '';
     public $chatMessages;
 
@@ -21,7 +21,7 @@ class Chat extends Component
     public function mount(): void
     {
         if (Auth::check() && $this->userName === '') {
-            $this->userName = Auth::user()->name ?? '';
+            $this->userName = Auth::user()->name ?? '';            
         }
 
         $this->loadMessages();
@@ -29,7 +29,8 @@ class Chat extends Component
 
     public function loadMessages(): void
     {
-        $this->chatMessages = Message::orderBy('created_at')
+        $this->chatMessages = Message::with('user')
+            ->orderBy('created_at')
             ->latest()
             ->take(50)
             ->get()
@@ -59,16 +60,12 @@ class Chat extends Component
         $this->validate([
             'avatarImage' => 'nullable|image|max:10240', 
         ]);
-
-        if (! $this->avatarImage || ! Auth::check()) {
-            return;
-        }
-        $path = $this->avatarImage->store('avatars', 'public');
-
+        $path = $this->avatarImage->store('avatarImages', 'public');
+        $this->avatarImage->store('avatarImages', 'public');
+        
         $user = Auth::user();
         $user->avatar_url = $path;
-        $user->save();
-
+        $user->save();  
         $this->reset('avatarImage');
 
         session()->flash('status', 'Avatar updated.');
