@@ -56,10 +56,15 @@ class Chat extends Component
 
     public function saveAvatar(): void
     {
-        
+         // If no file selected, just exit gracefully
+        if (!$this->avatarImage) {
+            session()->flash('status', 'No image selected.');
+            return;
+        }
         $this->validate([
             'avatarImage' => 'nullable|image|max:10240', 
         ]);
+        
         $path = $this->avatarImage->store('avatarImages', 'public');
         $this->avatarImage->store('avatarImages', 'public');
         
