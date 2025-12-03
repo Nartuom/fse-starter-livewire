@@ -1,9 +1,10 @@
 @php
     $user = auth()->user();
-
-    $avatar = $user && $user->avatar_url
-        ? asset('storage/'.$user->avatar_url)
+    
+    $userAvatar = $user && $user->avatar_url
+        ? asset('storage/' . $user->avatar_url)
         : 'https://ui-avatars.com/api/?name='.urlencode($user->name ?? 'User');
+    
 @endphp
 
 <div class="space-y-4">
@@ -35,7 +36,7 @@
     {{-- Username input --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 inline-flex flex-wrap items-center gap-3">
         <img
-            src="{{ $avatar }}"
+            src="{{ $userAvatar }}"
             alt="{{ $userName }}"
             class="h-8 w-8 rounded-full object-cover bg-slate-200 mt-1"
         >
@@ -82,6 +83,12 @@
             wire:poll.2s="loadMessages"
         >
             @forelse ($chatMessages as $message)
+                @php
+                    $msgUser = $message->user ?? null;
+                    $avatar = $msgUser && $msgUser->avatar_url
+                        ? asset('storage/' . $msgUser->avatar_url)
+                        : 'https://ui-avatars.com/api/?name='.urlencode($user->name ?? 'User');
+                @endphp
                 <div class="flex flex-col text-sm">
                     <div class="flex items-center gap-2">
                         <img
@@ -89,6 +96,7 @@
                             alt="{{ $message->user_name }}"
                             class="h-8 w-8 rounded-full object-cover bg-slate-200 mt-1"
                         >
+                        
                         <span class="font-semibold text-slate-800">
                             {{ $message->user_name }}  
                         </span>
