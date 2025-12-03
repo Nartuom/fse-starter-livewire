@@ -35,37 +35,41 @@
 
     {{-- Username input --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
-        <img
-            src="{{ $userAvatar }}"
-            alt="{{ $userName }}"
-            class="flex-shrink-0 h-8 w-8 rounded-full object-cover bg-slate-200 mt-1"
-        >
-        <label for="userName" class="flex-shrink-0 text-sm font-medium text-black-700">
-            Display name
-        </label>
-        <input
-            type="text"
-            wire:model.live="userName"
-            id="userName"
-            name="userName"
-            x-on:input="localStorage.setItem('chat_user_name', $event.target.value)"
-            class="flex-1 min-w-[120px] rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2"
-            placeholder="How should we show your messages?"
-        >
+        <div class="inline-flex align-center">
+            <img
+                src="{{ $userAvatar }}"
+                alt="{{ $userName }}"
+                class="h-10 w-10 rounded-full bg-slate-200 mt-1"
+            >
+            <div class="ms-4">
+                <label for="userName" class="text-sm font-medium text-black-700">
+                    Display name
+                </label>
+                <br>
+                <input
+                    type="text"
+                    wire:model.live="userName"
+                    id="userName"
+                    name="userName"
+                    x-on:input="localStorage.setItem('chat_user_name', $event.target.value)"
+                    class="rounded-lg border-black-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm p-2"
+                    placeholder="How should we show your messages?"
+                >
+            </div>
+            
+        </div>
+        
         <div class="w-full md:w-auto md:ml-auto">
             {{-- Upload profile image --}}
             <form wire:submit.prevent="saveAvatar" class="">
-                <label for="avatarImageUpload" class="block text-xs font-semibold text-slate-500 uppercase">
-                    Profile picture
-                </label>
-
-                <input
-                    type="file"
+                <flux:input 
+                    type="file" 
                     id="avatarImageUpload"
                     name="avatarImageUpload"
-                    wire:model="avatarImage"
-                    class="block w-full text-xs text-slate-700 file:mr-2 file:py-2 file:px-2 file:rounded-lg file:border-1 file:bg-slate-900 file:text-white hover:file:bg-slate-800 mb-2"
-                >
+                    size="sm" 
+                    wire:model="avatarImage" 
+                    label="Upload an Avatar"
+                />
 
                 @error('avatarImage')
                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
@@ -73,7 +77,7 @@
 
                 <button
                     type="submit"
-                    class="inline-flex items-center rounded-lg bg-indigo-600 px-2 py-2 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40"
+                    class="items-center rounded-lg bg-indigo-600 px-2 py-2 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-40 mt-2"
                 >
                     Save avatar
                 </button>
